@@ -136,6 +136,34 @@
       font-weight: 700;
     }
     
+    .password-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    
+    .toggle-password {
+      position: absolute;
+      right: 15px;
+      background: none;
+      border: none;
+      color: #2c6e2c;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .toggle-password:hover {
+      background-color: #e9f6e9;
+      color: #1b5e20;
+    }
+    
     .button-group {
       display: flex;
       gap: 15px;
@@ -351,7 +379,15 @@
         
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" id="password" name="password" required />
+          <div class="password-container">
+            <input type="password" id="password" name="password" required style="width: 100%; padding-right: 50px;" />
+            <button type="button" id="togglePassword" class="toggle-password" aria-label="Show password">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
         </div>
         
         <button type="submit" style="width: 100%; margin-top: 20px;">Login</button>
@@ -497,6 +533,8 @@
       const deleteBtn = document.getElementById('deleteBtn');
       const clearAllBtn = document.getElementById('clearAllBtn');
       const logoutBtn = document.getElementById('logoutBtn');
+      const togglePasswordBtn = document.getElementById('togglePassword');
+      const passwordInput = document.getElementById('password');
 
       // Application State
       let currentSrNo = parseInt(localStorage.getItem('currentSrNo')) || 1;
@@ -514,6 +552,28 @@
         srNoInput.value = currentSrNo;
         calculateTotalInvestment();
       }
+
+      // Toggle password visibility
+      togglePasswordBtn.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Update icon
+        const icon = this.querySelector('svg');
+        if (type === 'text') {
+          icon.innerHTML = `
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+          `;
+          this.setAttribute('aria-label', 'Hide password');
+        } else {
+          icon.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          `;
+          this.setAttribute('aria-label', 'Show password');
+        }
+      });
 
       // Calculate total investment on input change
       function calculateTotalInvestment() {
@@ -566,6 +626,14 @@
           loginForm.reset();
           loginMessage.textContent = '';
           loginMessage.className = 'message';
+          // Reset password visibility
+          passwordInput.setAttribute('type', 'password');
+          const icon = togglePasswordBtn.querySelector('svg');
+          icon.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          `;
+          togglePasswordBtn.setAttribute('aria-label', 'Show password');
         }
       });
 
